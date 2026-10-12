@@ -103,6 +103,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 #map text { font-family: var(--font-data); font-weight: 600; }
 #map .tag { cursor: grab; touch-action: none; }
 #map .veil { fill: var(--sheet); opacity: .18; }
+#map .tiles.dark image { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6); }
 #map.sat .veil { fill: #000; opacity: .12; }
 #map.sat polygon { stroke: #ffffff; fill: rgba(255,255,255,.10); }
 #map.sat polyline { stroke: #ff8a3d; }
@@ -685,8 +686,9 @@ td.old { color: var(--muted); }
       const z = Math.max(1, Math.min(src.max, Math.ceil(Math.log2(sc / 256))));
       const n = 2 ** z, ts = sc / n;
       const wx0 = x0 - ox / sc, wx1 = x0 + (W - ox) / sc, wy0 = y0 - oy / sc, wy1 = y0 + (H - oy) / sc;
-      const tg = mk("g", { class: "tiles", "pointer-events": "none" });
       const dark = document.documentElement.dataset.theme === "dark" || (document.documentElement.dataset.theme !== "light" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+      // OSM has no dark style, so the street tiles are darkened with a filter in dark mode
+      const tg = mk("g", { class: dark && bm === "streets" ? "tiles dark" : "tiles", "pointer-events": "none" });
       for (let tx = Math.floor(wx0 * n); tx <= Math.floor(wx1 * n); tx++) for (let ty = Math.floor(wy0 * n); ty <= Math.floor(wy1 * n); ty++) {
         if (ty < 0 || ty >= n) continue;
         const url = src.url(z, ((tx % n) + n) % n, ty, dark);
@@ -735,8 +737,9 @@ td.old { color: var(--muted); }
   }
   let tagPos = [], mapFs = 16, tileErrors = 0;
   const BASEMAPS = {
-    streets: { max: 19, attrib: "© OpenStreetMap contributors © CARTO",
-      url: (z, x, y, dark) => `https://${"abcd"[(x + y) % 4]}.basemaps.cartocdn.com/${dark ? "dark_all" : "light_all"}/${z}/${x}/${y}.png` },
+    // OpenStreetMap's own tiles: no API key needed (attribution required)
+    streets: { max: 19, attrib: "© OpenStreetMap contributors",
+      url: (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png` },
     sat: { max: 19, attrib: "Imagery © Esri, Maxar, Earthstar Geographics",
       url: (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}` }
   };

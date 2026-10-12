@@ -49,7 +49,7 @@ The **row grouping** slider controls how far apart two zones can be and still co
 
 ## Base maps
 
-Streets (© OpenStreetMap contributors © CARTO) or satellite (Esri World Imagery), or none. Number tags sit at the point deepest inside each zone, so they stay inside C, L and U shaped zones.
+Streets (OpenStreetMap, no API key needed) or satellite (Esri World Imagery), or none. Number tags sit at the point deepest inside each zone, so they stay inside C, L and U shaped zones.
 
 ## Running offline
 
